@@ -42,7 +42,7 @@ ProbSparse Self-Attention의 핵심 아이디어는 "불필요한 query들에 �
 
 즉, 저자가 지적한 Sparse하다는 점은 Self-Attention 측면에서도 의미가 없는 경우이다.
 
-본 논문에서는 불필요한 query를 걸러내기 위해 다음과 같이 query별 **Sparsity Measurement**, *M*을 계산한다.
+본 논문에서는 불필요한 query를 걸러내기 위해 다음과 같이 query별 ***Sparsity Measurement***, *M*을 계산한다.
 
 ![Sparsity_Measurement_1](./imgs/Sparsity_Measurement_1.svg)<br/>
 
@@ -52,6 +52,20 @@ ProbSparse Self-Attention의 핵심 아이디어는 "불필요한 query들에 �
 
 ProbSparse Self-Attention은 Canonical Self-Attention에 비해 개선된 O(__len(K)*ln(len(Q))__)의 Computation과 Memory를 요구한다.
 
-추가로, *M*값을 계산하는데 O(len(Q)*len(K))의 연산이 발생하는 점을 보완하기 위해, Long Tail Distribution에 의거하여  ln(len(K))개의 key들만으로 query별 Sparsity Measurement를 계산한다.
+추가로, *M*값을 계산하는데 O(len(Q)*len(K))의 연산이 발생하는 점을 보완하기 위해, Long Tail Distribution에 의거하여  ln(len(K))개의 key들만으로 query별 Sparsity Measurement를 계산(재정의)한다.
 
 ![Sparsity_Measurement_3](./imgs/Sparsity_Measurement_3.svg)
+
+### Self-Attention Distilling
+
+![Self_Attention_Distilling](./imgs/Self_Attention_Distilling.png)
+
+Encoder에서 ProbSparse Self-Attention 이후 1-D Convolution과 Stride-2 MaxPooling을 수행하여 Input Sequence를 절반으로 만들어 준다.
+
+### Generative Decoder
+
+![Decoder_Input](./imgs/Decoder_Input.svg)
+
+Auto-Regressive한 방식의 Canonical Decoder와 달리, Target Sequence만큼의 Placeholder(0 Token)를 Input으로 넣어줌으로써 한 번의 Inference에 모든 Position 값을 예측한다.
+
+Target Sequence 직전, 일정 기간의 Sequence를 추출하여 Start Token으로 사용한다.
