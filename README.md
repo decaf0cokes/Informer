@@ -28,7 +28,7 @@ Canonical Self-Attention은 다음과 같이 표현될 수 있다. (Q, K, V = qu
 
 ![Canonical_Self_Attention](./imgs/Canonical_Self_Attention.svg)
 
-수식에서 f()는 query와 key간의 Attention을 계산하는 함수로, Transformer에서는 Scaled Dot-Product를 사용하였다.
+수식에서 f()는 query와 key간의 Attention을 계산하는 함수로, Transformer에서는 Scaled Dot-Product를 사용한다.
 
 위와 같은 계산 방식은 **Quadratic Times**의 Dot-Product 연산을 비롯해 O(__len(Q)*len(K)__)의 메모리(Size of Attention Matrix)를 필요로 한다.
 
