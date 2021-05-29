@@ -32,26 +32,26 @@ Canonical Self-Attention은 다음과 같이 표현될 수 있다. (Q, K, V = qu
 
 위와 같은 계산 방식은 **Quadratic Times**의 Dot-Product 연산을 비롯해 O(__len(Q)*len(K)__)의 메모리(Size of Attention Matrix)를 필요로 한다.
 
-> 본 논문에서는 **Canonical Self-Attention이 Potentially Sparse하다**는 점을 지적하며 **Computation/Memory 측면에서 효율적인 ProbSparse Self-Attention**을 제안한다.
+#### "본 논문에서는 Canonical Self-Attention이 Potentially Sparse하다는 점을 지적하며 Computation/Memory 측면에서 효율적인 ProbSparse Self-Attention을 제안한다."
 
-ProbSparse Self-Attention의 핵심 아이디어는 "**불필요한 query들에 대한 Attention을 계산하지 않겠다**"는 것이다.
+ProbSparse Self-Attention의 핵심 아이디어는 "불필요한 query들에 대한 Attention을 계산하지 않겠다"는 것이다.
 
-불필요한 query란, **모든 key들과의 Attention 값이 비슷하여 Q, K, V 간의 Self-Attention이 value들의 단순 합이 되게하는 query**를 의미한다.
+불필요한 query란, 모든 key들과의 Attention 값이 비슷하여 Q, K, V 간의 Self-Attention이 value들의 단순 합이 되도록 하는 query를 의미한다.
 
-예를 들어, 특정 query ~q가 5개의 key들과 [2, 2, 2, 2, 2]의 Attention을 가질 경우 ~q, K, V 간의 Self-Attention은 value들의 단순 합이 되어버리며, 이 때 K가 긴 Sequence를 가진다면 Softmax를 취한 Attention값들도 모두 0에 수렴(Sparse)하게 된다.
+예를 들어, 특정 query q'가 5개의 key들과 [2, 2, 2, 2, 2]의 Attention을 갖는 경우 q', K, V 간의 Self-Attention은 value들의 단순 합이 되어버리며, 이 때 K가 긴 Sequence를 가진다면 Softmax를 취한 Attention값들이 모두 0에 수렴하게 된다(-> Sparse).
 
 즉, 저자가 지적한 Sparse하다는 점은 Self-Attention 측면에서도 의미가 없는 경우이다.
 
-본 논문에서는 불필요한 query를 걸러내기 위해 다음과 같이 query별 **Sparsity Measurement, *M***을 계산한다.
+본 논문에서는 불필요한 query를 걸러내기 위해 다음과 같이 query별 **Sparsity Measurement**, *M*을 계산한다.
 
 ![Sparsity_Measurement_1](./imgs/Sparsity_Measurement_1.svg)<br/>
 
 ![Sparsity_Measurement_2](./imgs/Sparsity_Measurement_2.svg)
 
-확률 p가 Uniform Distribution q와 차이가 클수록 *M*값은 증가하며(KL Divergence를 사용했으므로), *M*값이 큰 c*ln(len(Q))개의 query들만을 선택하여 Attention을 계산한다.
+확률 p가 Uniform Distribution, q와 차이가 클수록 *M*값은 증가하며(KL Divergence를 사용했으므로), *M*값이 큰 c*ln(len(Q))개의 query들만을 선택하여 Attention을 계산한다.
 
-ProbSparse Self-Attention은 Canonical Self-Attention에 비해 개선된 O(__len(K)*ln(len(Q))__)의 Computation과 Memory를 필요로 한다.
+ProbSparse Self-Attention은 Canonical Self-Attention에 비해 개선된 O(__len(K)*ln(len(Q))__)의 Computation과 Memory를 요구한다.
 
-추가로, *M*값을 계산하는데 O(len(Q)*len(K))의 연산이 발생하는 점을 보완하기 위해, **특정 query와 (Long Tail Distribution에 의거하여) 일부 ln(len(K))개의 key들만**으로 *M*값을 계산할 수 있도록 Sparsity Measurement를 재정의한다.
+추가로, *M*값을 계산하는데 O(len(Q)*len(K))의 연산이 발생하는 점을 보완하기 위해, Long Tail Distribution에 의거하여  ln(len(K))개의 key들만으로 query별 Sparsity Measurement를 계산한다.
 
 ![Sparsity_Measurement_3](./imgs/Sparsity_Measurement_3.svg)
